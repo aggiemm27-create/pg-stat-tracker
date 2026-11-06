@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>PG Stats</title>
+<meta name="theme-color" content="#0b2a5b">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="PG Stats">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Source+Sans+3:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+
+<!-- Loading -->
+<div class="app center" id="v-loading"><p>Loading…</p></div>
+
+<!-- Sign in -->
+<form class="app login" id="v-login" hidden autocomplete="on">
+  <div class="brand">
+    <img src="icons/icon-192.png" alt="">
+    <h1>PG Stats</h1>
+    <p>Sign in to track the season</p>
+  </div>
+  <div class="fld"><label for="li-email">Email</label><input type="email" id="li-email" autocomplete="username" required></div>
+  <div class="fld"><label for="li-pass">Password</label><input type="password" id="li-pass" autocomplete="current-password" required></div>
+  <p class="err" id="li-err" role="alert"></p>
+  <button type="submit" class="save" id="li-go">Sign in</button>
+  <button type="button" class="linkb" id="li-forgot">Forgot password?</button>
+</form>
+
+<!-- Home -->
+<div class="app home" id="v-home" hidden>
+  <div class="ph">
+    <button type="button" class="phb" id="h-player" aria-label="Edit player">
+      <div class="av" id="h-av">#—</div>
+      <div class="nm"><h1 id="h-name">Player</h1><p id="h-sub"></p></div>
+    </button>
+    <span class="sync" id="h-sync">Synced</span>
+    <button type="button" class="menu" id="h-menu" aria-label="More">⋯</button>
+  </div>
+  <div class="ngc">
+    <div class="eyebrow" id="ng-when">Next game</div>
+    <h2 id="ng-opp"></h2>
+    <div class="meta" id="ng-meta"></div>
+    <div class="ty" id="ng-type"></div>
+    <button type="button" class="start" id="ng-start">Start Game</button>
+  </div>
+  <div class="sec">
+    <h3>Coming up</h3>
+    <div class="up" id="h-up"></div>
+    <button type="button" class="linkb" id="h-sched">Full schedule →</button>
+  </div>
+  <div class="sec">
+    <h3><span>Season snapshot</span><em id="h-snapnote"></em></h3>
+    <div class="snap" id="h-snap"></div>
+  </div>
+  <div class="tiles">
+    <button type="button" class="tile" data-soon="Season Stats" data-phase="3"><b>Season Stats</b><span>Every stat, splits</span></button>
+    <button type="button" class="tile" data-soon="Shot Zones" data-phase="3"><b>Shot Zones</b><span>13-zone chart</span></button>
+    <button type="button" class="tile" id="h-log"><b>Game Log</b><span>Review and edit</span></button>
+    <button type="button" class="tile" data-soon="Player Card" data-phase="3"><b>Player Card</b><span>Photo, stats, badges</span></button>
+    <button type="button" class="tile" data-soon="Badges" data-phase="3"><b>Badges</b><span>Earned and next up</span></button>
+    <button type="button" class="tile" data-soon="Video Library" data-phase="4"><b>Video Library</b><span>Game film links</span></button>
+  </div>
+  <div class="sec">
+    <h3><span>Recent activity</span></h3>
+    <div class="act" id="h-act"></div>
+  </div>
+</div>
+
+<!-- Live game -->
+<div class="app" id="v-live" hidden>
+  <div class="top">
+    <div class="per" id="l-per">Q1</div>
+    <div class="stat"><b id="l-pts">0</b><span>pts</span></div>
+    <div class="stat pf" id="l-pfw"><b id="l-pf">0</b><span>fouls</span></div>
+    <button type="button" class="nextq" id="l-nextq">Next Q →</button>
+  </div>
+  <p class="note" id="l-note"></p>
+  <div class="court">
+    <canvas id="court" tabindex="0" aria-label="Half court. Tap the spot where he shot."></canvas>
+  </div>
+  <div class="grp o">
+    <h2>Offense</h2>
+    <div class="grid3">
+      <button type="button" class="b" data-a="ftm">FT ✓</button>
+      <button type="button" class="b" data-a="ftx">FT ✕</button>
+      <button type="button" class="b" data-a="ast">Assist</button>
+      <button type="button" class="b" data-a="to">Turnover</button>
+      <button type="button" class="b" data-a="fd">Foul<br>Drawn</button>
+      <button type="button" class="b" data-a="oreb">Off.<br>Rebound</button>
+    </div>
+  </div>
+  <div class="grp d">
+    <h2>Defense</h2>
+    <div class="grid3">
+      <button type="button" class="b" data-a="opp">Opp.<br>Shot</button>
+      <button type="button" class="b" data-a="stl">Steal</button>
+      <button type="button" class="b" data-a="dfl">Deflection</button>
+      <button type="button" class="b" data-a="dreb">Def.<br>Rebound</button>
+      <button type="button" class="b" data-a="chg">Charge<br>Taken</button>
+      <button type="button" class="b" data-a="fc">Foul<br>Committed</button>
+    </div>
+  </div>
+  <div class="foot">
+    <button type="button" class="ghost" id="l-undo">Undo last</button>
+    <button type="button" class="ghost" id="l-log">Game log (0)</button>
+    <button type="button" class="ghost" id="l-end">End game</button>
+  </div>
+</div>
+
+<div class="sheet" id="sheet" hidden><div class="sin" id="sin"></div></div>
+<div class="toast" id="toast" hidden><div class="tx" id="tx"></div><button type="button" id="t-undo">Undo</button></div>
+
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
