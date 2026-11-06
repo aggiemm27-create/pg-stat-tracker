@@ -1,6 +1,6 @@
 // Keeps the app's files on the phone so it opens with no signal.
 // Firebase data syncing is handled separately by Firebase itself.
-const CACHE = "pg-stats-v1";
+const CACHE = "pg-stats-v2";
 const CORE = [
   "./", "./index.html", "./css/app.css", "./js/app.js", "./js/data.js", "./js/firebase.js",
   "./manifest.webmanifest", "./icons/icon-192.png", "./icons/icon-512.png", "./icons/apple-touch-icon.png",

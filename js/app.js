@@ -169,9 +169,11 @@ function render() {
   if (view === "v-live") renderLive();
 }
 
+const isPending = () => Object.values(S.pending).some(Boolean);
 function syncBadge() {
-  const b = $("h-sync"), pend = Object.values(S.pending).some(Boolean);
-  b.textContent = pend ? "Saved on phone" : navigator.onLine ? "Synced" : "Offline";
+  const b = $("h-sync"), pend = isPending();
+  b.textContent = pend ? "● Saved on this phone · will sync when there's a signal"
+    : navigator.onLine ? "✓ All stats synced" : "● Offline · new stats save on this phone";
   b.classList.toggle("pend", pend || !navigator.onLine);
 }
 
@@ -255,7 +257,8 @@ function renderLive() {
   const pf = lp.reduce((s, p) => s + pfOf(p), 0);
   $("l-pf").textContent = pf; $("l-pfw").classList.toggle("hot", pf >= 4);
   $("l-log").textContent = `Game log (${lp.length})`;
-  $("l-note").textContent = `${g.opp} · tap where he shot (● make ✕ miss)`;
+  $("l-note").textContent = `${g.opp} · tap where he shot (● make ✕ miss)` +
+    (isPending() || !navigator.onLine ? " · saved on phone" : "");
   draw();
 }
 
@@ -263,22 +266,20 @@ function renderLive() {
 // Court
 // ---------------------------------------------------------------------------
 const cv = $("court");
-function draw() {
-  if (view !== "v-live") return;
-  const r = cv.getBoundingClientRect(), dpr = window.devicePixelRatio || 1;
-  const w = Math.round(r.width * dpr), h = Math.round(r.height * dpr);
-  if (!w || !h) return;
-  cv.width = w; cv.height = h;
-  const ctx = cv.getContext("2d"), sx = w / W, sy = h / H;
+// The court picture is drawn once and reused; only the shot marks are redrawn after each play.
+let courtCache = null;
+function courtBackground(w, h, dpr, v) {
+  const key = `${w}x${h}|${v("--z-lay-a")}|${v("--cline")}`;
+  if (courtCache && courtCache.key === key) return courtCache.canvas;
+  const c = document.createElement("canvas"); c.width = w; c.height = h;
+  const ctx = c.getContext("2d"), sx = w / W, sy = h / H;
   const px = (x) => (x * sx) / dpr, py = (y) => (y * sy) / dpr;
-  const css = getComputedStyle(document.documentElement), v = (n) => css.getPropertyValue(n).trim();
   const tint = { lay: [v("--z-lay-a"), v("--z-lay-b")], mid: [v("--z-mid-a"), v("--z-mid-b")], three: [v("--z3-a"), v("--z3-b")] };
   ctx.setTransform(sx, 0, 0, sy, 0, 0);
   const st = 1.5, acc = {};
   for (let y = 0; y < H; y += st) for (let x = 0; x < W; x += st) {
     const id = classify(x + st / 2, y + st / 2), z = ZM[id];
     ctx.fillStyle = tint[z.c][z.alt]; ctx.fillRect(x, y, st + 0.06, st + 0.06);
-    if (id === sel) { ctx.globalAlpha = 0.55; ctx.fillStyle = v("--zsel"); ctx.fillRect(x, y, st + 0.06, st + 0.06); ctx.globalAlpha = 1; }
     const a = acc[id] || (acc[id] = { x: 0, y: 0, n: 0 }); a.x += x; a.y += y; a.n++;
   }
   ctx.strokeStyle = v("--cline"); ctx.lineWidth = 1.3;
@@ -292,6 +293,27 @@ function draw() {
   ctx.textAlign = "center"; ctx.textBaseline = "middle";
   const nudge = { PA: [0, 12], LC: [0, -4], RC: [0, -4], LB: [0, -6], RB: [0, -6] };
   for (const id in acc) { const a = acc[id], nd = nudge[id] || [0, 0]; ctx.fillText(ZM[id].s, px(a.x / a.n + nd[0]), py(a.y / a.n + nd[1])); }
+  courtCache = { key, canvas: c };
+  return c;
+}
+function draw() {
+  if (view !== "v-live") return;
+  const r = cv.getBoundingClientRect(), dpr = window.devicePixelRatio || 1;
+  const w = Math.round(r.width * dpr), h = Math.round(r.height * dpr);
+  if (!w || !h) return;
+  if (cv.width !== w || cv.height !== h) { cv.width = w; cv.height = h; }
+  const css = getComputedStyle(document.documentElement), v = (n) => css.getPropertyValue(n).trim();
+  const ctx = cv.getContext("2d"), sx = w / W, sy = h / H;
+  const px = (x) => (x * sx) / dpr, py = (y) => (y * sy) / dpr;
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.drawImage(courtBackground(w, h, dpr, v), 0, 0);
+  if (sel) {
+    ctx.setTransform(sx, 0, 0, sy, 0, 0); ctx.globalAlpha = 0.5; ctx.fillStyle = v("--zsel");
+    const st = 1.5;
+    for (let y = 0; y < H; y += st) for (let x = 0; x < W; x += st) if (classify(x + st / 2, y + st / 2) === sel) ctx.fillRect(x, y, st + 0.06, st + 0.06);
+    ctx.globalAlpha = 1;
+  }
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   livePlays().filter((p) => p.type === "shot" && p.x != null).forEach((p) => {
     const x = px(p.x), y = py(p.y);
     if (p.f.res === "make") {
