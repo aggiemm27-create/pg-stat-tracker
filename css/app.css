@@ -5,7 +5,7 @@
   --off:#8a6200; --off-soft:#fcefc7; --def:#0b3a7e; --def-soft:#dde7f6; --on-def:#ffffff;
   --make:#1d7f49; --miss:#bf3626; --warn:#c2410c; --on-strong:#ffffff;
   --z-lay-a:#f7dd8c; --z-lay-b:#f1cf68; --z-mid-a:#efe4cc; --z-mid-b:#e5d5b4; --z3-a:#d9e5f4; --z3-b:#c8d9ef;
-  --cline:#22385e; --zlabel:#1a2a47; --zsel:#0b3a7e;
+  --cline:#22385e; --zlabel:#1a2a47; --zsel:#0b3a7e; --tile-line:#0b2a5b;
   --display:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
   --body:"Source Sans 3",-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
   color-scheme:light;
@@ -16,7 +16,7 @@
   --off:#f5c22b; --off-soft:#33290b; --def:#86b0f0; --def-soft:#152847; --on-def:#08101e;
   --make:#3cc27a; --miss:#f06a5a; --warn:#fb923c; --on-strong:#08101e;
   --z-lay-a:#4a3c10; --z-lay-b:#574713; --z-mid-a:#2e2a21; --z-mid-b:#373122; --z3-a:#152747; --z3-b:#1b3054;
-  --cline:#b9c7dd; --zlabel:#e6ecf6; --zsel:#f5c22b; color-scheme:dark}}
+  --cline:#b9c7dd; --zlabel:#e6ecf6; --zsel:#f5c22b; --tile-line:#2c4877; color-scheme:dark}}
 
 [hidden]{display:none!important}
 html,body{height:100%;margin:0}
@@ -135,9 +135,9 @@ canvas{display:block;width:100%;max-width:100%;aspect-ratio:300/250;touch-action
 .snap b{display:block;font-family:var(--display);font-size:1.75rem;line-height:1;font-variant-numeric:tabular-nums}
 .snap span{font-size:.7rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
 .tiles{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.tile{min-height:68px;border:1px solid var(--line);background:var(--surface);border-radius:12px;text-align:left;padding:10px 12px;display:flex;flex-direction:column;justify-content:center;gap:2px}
-.tile b{font-family:var(--display);font-size:1.25rem;line-height:1.05}
-.tile span{font-size:.8rem;color:var(--muted)}
+.tile{min-height:68px;border:1.5px solid var(--tile-line);background:var(--bar);color:var(--on-bar);border-radius:12px;text-align:left;padding:10px 12px;display:flex;flex-direction:column;justify-content:center;gap:2px}
+.tile b{font-family:var(--display);font-size:1.25rem;line-height:1.05;color:var(--gold)}
+.tile span{font-size:.8rem;color:var(--bar-muted)}
 .act{display:flex;flex-direction:column}
 .act div{padding:9px 0;border-top:1px solid var(--line);font-size:.95rem}
 .act div small{display:block;color:var(--muted);font-size:.8rem}
